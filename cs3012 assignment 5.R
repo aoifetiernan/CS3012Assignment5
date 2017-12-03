@@ -7,7 +7,7 @@ library(httpuv)
 library(httr)
 library(dplyr)
 library(tidyverse)
-
+library(ggplot2)
 
 #Select github as the endpoint
 oauth_endpoints("github")
@@ -25,7 +25,7 @@ getToken <- config(token = githubToken)
 
 
 
-#Get current users followers
+#Returns the Information on the Current Users Followers 
 getFollowers <- function(username)
 {
   i <- 1
@@ -33,7 +33,7 @@ getFollowers <- function(username)
   followersDF <- data_frame()
   while(x!=0)
   {
-    followers <- GET( paste0("https://api.github.com/users/", username, "/followers?per_page=100&page=", i))
+    followers <- GET( paste0("https://api.github.com/users/", username, "/followers?per_page=100&page=", i),getToken)
     followersContent <- content(followers)
     currentFollowersDF <- lapply(followersContent, function(x) 
     {
@@ -48,8 +48,61 @@ getFollowers <- function(username)
 
 
 
+#Returns the Information on the Current Users Repositories
+getRepos <- function(username)
+{
+  i <- 1
+  x <- 1
+  reposDF <- data_frame()
+  while(x!=0)
+  {
+    repos <- GET( paste0("https://api.github.com/users/", username, "/repos?per_page=100&page=", i),getToken)
+    reposContent <- content(repos)
+    currentReposDF <- lapply(reposContent, function(x) 
+    {
+      df <- data_frame(repo = x$name, id = x$id, commits = x$git_commits_url) #language = x$language)
+    }) %>% bind_rows()
+    i <- i+1
+    x <- length(reposContent)
+    reposDF <- rbind(reposDF, currentReposDF)
+  }
+  return (reposDF)
+}
 
-#Get current users list of following
+
+#Passing in the information of our initial user
+followersDF <- getFollowers("phadej")
+numberOfFollowers <- length(followersDF$userID)
+followersUsernames <- followersDF$user
+data <- data.frame()
+
+
+#Iterating through the current users followers to extract number of followers and number of repos
+for(i in 1:numberOfFollowers)
+{
+  userName <- followersUsernames[i]
+  repos <- getRepos(userName)
+  followers <- getFollowers(userName) 
+  numberOfRepositories <- length(repos$repo)
+  numberOfFollowers <- length(followers$user)
+  newRow <- data.frame(userName, numberOfRepositories, numberOfFollowers)
+  data <- rbind(data, newRow)
+  i <- i+1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Returns the information on the users followed by the parameterized user
 getFollowing <- function(username)
 {
   i <- 1
@@ -57,7 +110,7 @@ getFollowing <- function(username)
   followingDF <- data_frame()
   while(x!=0)
   {
-    following <- GET( paste0("https://api.github.com/users/", username, "/following?per_page=100&page=", i))
+    following <- GET( paste0("https://api.github.com/users/", username, "/following?per_page=100&page=", i),getToken)
     followingContent <- content(following)
     currentFollowingDF <- lapply(followingContent, function(x) 
     {
@@ -80,9 +133,10 @@ checkDuplicate <- function(dataframe)
 }
 
 
-allUsers <- data_frame()
+#allUsers <- data_frame()
 addUser <- function(username)
 {
+  allUsers <- data_frame()
   followers <- getFollowers(username)
   following <- getFollowing(username)
   allUsers <- rbind(allUsers,followers,following)
@@ -90,6 +144,6 @@ addUser <- function(username)
   return(checkForDups)
 }
 
-list <- addUser('phadej')
+
 #Save in CSV form
 write.csv(followingDF, file="dataTest.csv")
