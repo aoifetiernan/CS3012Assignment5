@@ -10,8 +10,16 @@ The steps in this development process involved:
   4. Processing the data I recieved - storing it in a dataframe, removing duplicates, sorting etc. 
   5. Downloading the plotly() package, setting up a plotly account online and using their interactive graphing functions to        visualise the user data. 
 
-Link to my visualization: https://plot.ly/~aoifetiernan/6
-Note: I have put a screenshot off my visualization in this repo but the above link will display the interactive plot I have created. 
+For this assignment I decided to look at the relationship between the number of followers and number of repositories a Github user has. I expected there to be some form of a positive linear relationship - expecting those who were more active in terms of repositories to have more followers. This was not the case. 
+I also created a function which shows the repository languages implemented by a given user. I thought this was useful, and interesting data to have access to.
 
+
+Link to my plotly account with visualization: https://plot.ly/~aoifetiernan
+
+Graph 1: https://plot.ly/~aoifetiernan/8
+Graph 2: https://plot.ly/~aoifetiernan/10
+Graph 3: https://plot.ly/~aoifetiernan/12
+
+Note: I have put screenshots of my visualization in this repo but the above link will display my plotly homepage.
 
 
