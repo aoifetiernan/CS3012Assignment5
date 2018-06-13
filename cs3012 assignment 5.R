@@ -13,7 +13,7 @@ oauth_endpoints("github")
 #Enter the details for my personal github application
 myApplication <- oauth_app(appname = "AoifeTiernanCS3012",
                    key = "b48eac03318fa39aa787",
-                   secret = "b38c1c62e04b79152a3514bbac4b4a7fd1f6cde7")
+                   secret = "")
 
 
 #Set and get my github token 
